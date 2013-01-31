@@ -99,12 +99,6 @@ $cp = ceil(($count_entries-$start)/$articles_per_page);
 $cp = $nbr_pages-$cp+1;
 
 
-
-
-
-
-
-
 $sql = "SELECT cal_id, cal_startdate, cal_enddate, cal_title, cal_text
 		FROM fc_cals
 		$filer_sql
@@ -112,74 +106,60 @@ $sql = "SELECT cal_id, cal_startdate, cal_enddate, cal_title, cal_text
 		LIMIT $start , $articles_per_page";
 
    foreach ($dbh->query($sql) as $row) {
-     $result[] = $row;
+     $cals[] = $row;
    }
-
-
-
 
 $dbh = null;
 
 
-
-echo"<p style='padding:4px;background-color:#ccc;text-align:center;'>
+echo"<div class='well well-small'><p>
 		Eintrag $show_start bis $end von $count_entries Terminen (Seite $cp von $nbr_pages)<br />$newer_link $older_link
-	 </p>";
+	 </p></div>";
 
 
-for($i=0;$i<count($result);$i++) {
+for($i=0;$i<count($cals);$i++) {
 
-$cal_id = $result[$i][cal_id];
-$cal_title = stripslashes($result[$i][cal_title]);
-$cal_text = stripslashes($result[$i][cal_text]);
-
-/* timestamps */
-$cal_startdate = $result[$i][cal_startdate];
-$cal_enddate = $result[$i][cal_enddate];
-$now = time();
-
-
-/* round timestamps */
-$rnd_cal_startdate = ceil($cal_startdate/86400)*86400; 
-$rnd_now = ceil($now/86400)*86400; 
-
-$dif_date = $rnd_cal_startdate-$rnd_now;
-$days = ceil($dif_date/86400);
-
-$showdays = "in $days Tagen";
-
-if($days == 0) { $showdays = "heute"; }
-if($days == 1) { $showdays = "morgen"; }
-if($days == 2) { $showdays = "übermorgen"; }
-
-
-
-
-$cal_startdate = date("d.m.Y",$cal_startdate);
-$cal_enddate = date("d.m.Y",$cal_enddate);
-
-
-
-
-$link_edit = "<a class='btn btn-success btn-mini' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=edit&id=$cal_id'>Bearbeiten</a>";
-$link_delete = "<a class='btn btn-danger btn-mini' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=start&delete=$cal_id' onclick=\"return confirm('$lang[confirm_delete_data]')\">Löschen</a>";
-
-
-$tpl = file_get_contents("../modules/flatCal.mod/templates/acp_cals_list.tpl");
-$tpl = str_replace("{cal_id}", $cal_id, $tpl);
-$tpl = str_replace("{cal_title}", $cal_title, $tpl);
-$tpl = str_replace("{cal_text}", "$cal_text", $tpl);
-$tpl = str_replace("{cal_startdate}", "$cal_startdate", $tpl);
-$tpl = str_replace("{cal_enddate}", "$cal_enddate", $tpl);
-$tpl = str_replace("{showdays}", "$showdays", $tpl);
-$tpl = str_replace("{edit_cal}", "$link_edit", $tpl);
-$tpl = str_replace("{delete_cal}", "$link_delete", $tpl);
-
-
-
-
-
-echo "$tpl";
+	$cal_id = $cals[$i][cal_id];
+	$cal_title = stripslashes($cals[$i][cal_title]);
+	$cal_text = stripslashes($cals[$i][cal_text]);
+	
+	/* timestamps */
+	$cal_startdate = $cals[$i][cal_startdate];
+	$cal_enddate = $cals[$i][cal_enddate];
+	$now = time();
+	
+	
+	/* round timestamps */
+	$rnd_cal_startdate = ceil($cal_startdate/86400)*86400; 
+	$rnd_now = ceil($now/86400)*86400; 
+	
+	$dif_date = $rnd_cal_startdate-$rnd_now;
+	$days = ceil($dif_date/86400);
+	
+	$showdays = "in $days Tagen";
+	
+	if($days == 0) { $showdays = "heute"; }
+	if($days == 1) { $showdays = "morgen"; }
+	if($days == 2) { $showdays = "übermorgen"; }
+	
+	$cal_startdate = date("d.m.Y",$cal_startdate);
+	$cal_enddate = date("d.m.Y",$cal_enddate);
+	
+	$link_edit = "<a class='btn btn-success btn-mini' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=edit&id=$cal_id'>Bearbeiten</a>";
+	$link_delete = "<a class='btn btn-danger btn-mini' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=start&delete=$cal_id' onclick=\"return confirm('$lang[confirm_delete_data]')\">Löschen</a>";
+	
+	
+	$tpl = file_get_contents("../modules/flatCal.mod/templates/acp_cals_list.tpl");
+	$tpl = str_replace("{cal_id}", $cal_id, $tpl);
+	$tpl = str_replace("{cal_title}", $cal_title, $tpl);
+	$tpl = str_replace("{cal_text}", "$cal_text", $tpl);
+	$tpl = str_replace("{cal_startdate}", "$cal_startdate", $tpl);
+	$tpl = str_replace("{cal_enddate}", "$cal_enddate", $tpl);
+	$tpl = str_replace("{showdays}", "$showdays", $tpl);
+	$tpl = str_replace("{edit_cal}", "$link_edit", $tpl);
+	$tpl = str_replace("{delete_cal}", "$link_delete", $tpl);
+	
+	echo "$tpl";
 
 }
 
