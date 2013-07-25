@@ -139,10 +139,10 @@ echo"<form action='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=categories' me
 echo'<div class="row-fluid">';
 echo'<div class="span6">';
 
-echo"<h5>Rubrik</5>";
+echo"<label>Rubrik</label>";
 echo"<input type='text' class='input-block-level' name='cat_name' value='$cat_name'>";
 
-echo"<h5>Beschreibung</h5>";
+echo"<label>Beschreibung</label>";
 echo"<textarea class='input-block-level' rows='4' name='cat_description'>$cat_description</textarea>";
 
 echo"</div>";

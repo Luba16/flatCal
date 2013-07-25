@@ -13,13 +13,8 @@ foreach($_POST as $key => $val) {
 	$$key = @sqlite_escape_string($val); 
 }
 
-if(!is_numeric($cal_startdate)) {
-	$cal_startdate = time();
-}
-
-if(!is_numeric($cal_enddate)) {
-	$cal_enddate = time();
-}
+$cal_startdate = strtotime($_POST[cal_startdate]);
+$cal_enddate = strtotime($_POST[cal_enddate]);
 
 if($cal_enddate < $cal_startdate) {
 	$cal_enddate = $cal_startdate;
