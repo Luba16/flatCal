@@ -14,7 +14,6 @@ div#cal_footer {
 .cal_item {
 	padding:4px 0 6px 0;
 	margin: 2px 0 12px 0;
-	border-bottom: 1px dotted #fff;
 }
 
 
@@ -24,7 +23,7 @@ div#cal_footer {
 
 div.date_box {
 	width: 90px;
-	background-color: #fff;
+	background: rgba(255,255,255,0.5);
 	border: 1px solid #CBCBCB;
 	float: left;
 	border-radius: 5px;
@@ -36,7 +35,7 @@ div.date_box {
 	line-height: 18px;
 	font-weight: bold;
 	text-align: center;
-	background-color: #bbb;
+	background: rgba(0,0,0,0.3);
 	color: #fff;
 	padding: 5px 0;
 	margin: 0;
@@ -74,9 +73,6 @@ div.date_box {
 	font-weight: bold;
 	margin: 0;
 }
-
-
-
 
 
 .cal_cats {

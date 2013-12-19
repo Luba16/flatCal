@@ -22,10 +22,8 @@ if($cat != "") {
 
 $dbh = new PDO("sqlite:$mod[database]");
 
-
 $count_entries = $dbh->query("Select Count(*) FROM fc_cals $filer_sql ")->fetch();
 $count_entries = $count_entries[0];
-
 
 
 $sql = "SELECT cal_id, cal_startdate, cal_enddate, cal_title, cal_text, cal_categories
@@ -41,17 +39,16 @@ foreach ($dbh->query($sql) as $row) {
 $dbh = null;
 
 
-
 $count_cals = count($cal);
 $now = time();
 
 for($i=0;$i<$count_cals;$i++) {
 
-	$cal_id = $cal[$i][cal_id];
-	$cal_title = stripslashes($cal[$i][cal_title]);
-	$cal_text = stripslashes($cal[$i][cal_text]);
-	$cal_startdate = $cal[$i][cal_startdate];
-	$cal_enddate = $cal[$i][cal_enddate];
+	$cal_id = $cal[$i]['cal_id'];
+	$cal_title = stripslashes($cal[$i]['cal_title']);
+	$cal_text = stripslashes($cal[$i]['cal_text']);
+	$cal_startdate = $cal[$i]['cal_startdate'];
+	$cal_enddate = $cal[$i]['cal_enddate'];
 	
 	$showdays = days_to_start($cal_startdate);
 	
@@ -66,9 +63,7 @@ for($i=0;$i<$count_cals;$i++) {
 	
 	$array_categories = explode("<->", $cal[$i][cal_categories]);
 	unset($cat_links);
-	foreach ($array_categories as $value) {
-	    
-	    
+	foreach ($array_categories as $value) {	    
 	    if($fc_mod_rewrite == "permalink") {
 	    	$cat_url = FC_INC_DIR . "/$fct_slug" . "$mod[url_categories]" . "/$value/";
 		  	$cat_links .= "<a href='$cat_url'>" . "$value</a> ";
@@ -113,7 +108,7 @@ for($i=0;$i<$count_cals;$i++) {
 
 
 if(count($cal) < 1) {
-	$articles_tpl = "<p class='notice'>Es sind noch keine Nachrichten gespeichert...</p>";
+	$articles_tpl = "<div class='alert alert-info'>Es sind noch keine Nachrichten gespeichert...</div>";
 }
 
 

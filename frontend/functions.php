@@ -11,11 +11,8 @@ function days_to_start($start) {
 
 	$now = time();
 	
-	$rnd_cal_startdate = ceil($start/86400)*86400; 
-	$rnd_now = ceil($now/86400)*86400; 
-
-	$dif_date = $rnd_cal_startdate-$rnd_now;
-	$days = ceil($dif_date/86400);
+	$diff = $start-$now;
+	$days = ceil($diff/86400);
 
 	$showdays = "in $days Tagen";
 	

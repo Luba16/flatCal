@@ -1,34 +1,33 @@
 <?php
 
 /**
- * @modul flatCal | frontend
+ * @modul flatCal | backend
  * startpage
-*/
+ */
+
 
 if(!defined('FC_INC_DIR')) {
 	die("No access");
 }
 
-echo"<div class='header-bc'><span>$mod_name</span></div>";
+echo '<h3>'.$mod_name.'</h3>';
 
 
 
 if(!is_file("$mod_db")) {
-	echo"Die Datenbank existiert nicht...<br />";
+	echo '<div class="alert alert-danger">Die Datenbank existiert nicht...</div>';
 	include("../modules/flatCal.mod/supplies/createDB.php");
 }
 
 
 /* change settings */
-if($_POST[change_settings]) {
 
-	if($_POST[show_expired] == "show") {
-		$_SESSION[show_expired] = "show";
-	} else {
-		unset($_SESSION[show_expired]);
-	}
-
+if($_GET['show_expired'] == "true") {
+	$_SESSION[show_expired] = "show";
+} elseif($_GET['show_expired'] == "false") {
+	unset($_SESSION[show_expired]);
 }
+
 
 
 
@@ -112,29 +111,38 @@ $sql = "SELECT cal_id, cal_startdate, cal_enddate, cal_title, cal_text
 $dbh = null;
 
 
-echo"<div class='well well-small'><p>
-		Eintrag $show_start bis $end von $count_entries Terminen (Seite $cp von $nbr_pages)<br />$newer_link $older_link
-	 </p></div>";
+echo "<div class='well well-sm'>";
+echo '<div class="row">';
+echo '<div class="col-md-9">';
+echo '<p class="text-center">';
+echo "Eintrag $show_start bis $end von $count_entries Terminen (Seite $cp von $nbr_pages)<br />$newer_link $older_link";
+echo '</p>';
+echo '</div>';
+echo '<div class="col-md-3">';
+if($_SESSION['show_expired'] == 'show') {
+	echo 'Abgelaufene Termine <a href="acp.php?tn=moduls&sub=flatCal.mod&a=start&show_expired=false" class="btn btn-danger btn-block">ausblenden</a>';
+} else {
+	echo 'Abgelaufene Termine <a href="acp.php?tn=moduls&sub=flatCal.mod&a=start&show_expired=true" class="btn btn-success btn-block">anzeigen</a>';
+}
+echo '</div>';
+echo '</div>';
 
+echo '</div>';
+
+$now = time();
 
 for($i=0;$i<count($cals);$i++) {
 
-	$cal_id = $cals[$i][cal_id];
-	$cal_title = stripslashes($cals[$i][cal_title]);
-	$cal_text = stripslashes($cals[$i][cal_text]);
+	$cal_id = $cals[$i]['cal_id'];
+	$cal_title = stripslashes($cals[$i]['cal_title']);
+	$cal_text = stripslashes($cals[$i]['cal_text']);
 	
 	/* timestamps */
-	$cal_startdate = $cals[$i][cal_startdate];
-	$cal_enddate = $cals[$i][cal_enddate];
-	$now = time();
+	$cal_startdate = $cals[$i]['cal_startdate'];
+	$cal_enddate = $cals[$i]['cal_enddate'];
 	
-	
-	/* round timestamps */
-	$rnd_cal_startdate = ceil($cal_startdate/86400)*86400; 
-	$rnd_now = ceil($now/86400)*86400; 
-	
-	$dif_date = $rnd_cal_startdate-$rnd_now;
-	$days = ceil($dif_date/86400);
+	$diff = $cal_startdate-$now;
+	$days = ceil($diff/86400);
 	
 	$showdays = "in $days Tagen";
 	
@@ -145,8 +153,8 @@ for($i=0;$i<count($cals);$i++) {
 	$cal_startdate = date("d.m.Y",$cal_startdate);
 	$cal_enddate = date("d.m.Y",$cal_enddate);
 	
-	$link_edit = "<a class='btn btn-success btn-mini' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=edit&id=$cal_id'>Bearbeiten</a>";
-	$link_delete = "<a class='btn btn-danger btn-mini' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=start&delete=$cal_id' onclick=\"return confirm('$lang[confirm_delete_data]')\">Löschen</a>";
+	$link_edit = "<a class='btn btn-success btn-xs' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=edit&id=$cal_id'>Bearbeiten</a>";
+	$link_delete = "<a class='btn btn-danger btn-xs' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=start&delete=$cal_id' onclick=\"return confirm('$lang[confirm_delete_data]')\">Löschen</a>";
 	
 	
 	$tpl = file_get_contents("../modules/flatCal.mod/templates/acp_cals_list.tpl");
@@ -163,18 +171,6 @@ for($i=0;$i<count($cals);$i++) {
 
 }
 
-
-if($_SESSION[show_expired]) {
-$checked_show_expired = "checked";
-} else {
-$checked_show_expired = "";
-}
-
-echo"<br /><hr><br /><form action='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=start' method='POST'>";
-
-echo"<input type='checkbox' name='show_expired' value='show' $checked_show_expired> Abgelaufene Termine anzeigen<br />";
-echo"<input type='submit' class='btn btn-mini' value='Übernehmen' name='change_settings'>";
-echo"</form>";
 
 
 

@@ -9,7 +9,7 @@ if(!defined('FC_INC_DIR')) {
 }
 
 
-echo"<div class='header-bc'><span>$mod_name</span><span>Rubriken bearbeiten</span></div>";
+echo"<h3>$mod_name <small>Rubriken bearbeiten</small></h3>";
 
 $dbh = new PDO("sqlite:$mod_db");
 
@@ -136,22 +136,23 @@ echo"<legend>Rubrik bearbeiten</legend>";
 
 echo"<form action='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=categories' method='POST'>";
 
-echo'<div class="row-fluid">';
-echo'<div class="span6">';
+echo'<div class="row">';
+echo'<div class="col-md-6">';
 
+echo '<div class="form-group">';
 echo"<label>Rubrik</label>";
-echo"<input type='text' class='input-block-level' name='cat_name' value='$cat_name'>";
+echo"<input type='text' class='form-control' name='cat_name' value='$cat_name'>";
+echo '</div>';
 
+echo '<div class="form-group">';
 echo"<label>Beschreibung</label>";
-echo"<textarea class='input-block-level' rows='4' name='cat_description'>$cat_description</textarea>";
+echo"<textarea class='form-control' rows='4' name='cat_description'>$cat_description</textarea>";
+echo '</div>';
 
 echo"</div>";
-;
-echo'<div class="span6">';
+echo'<div class="col-md-6">';
 
-echo"<h5>Vorhandene Rubriken:</h5>";
-
-
+echo"<h4>Vorhandene Rubriken:</h4>";
 
 for($i=0;$i<count($cats);$i++) {
 

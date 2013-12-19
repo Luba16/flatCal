@@ -8,6 +8,8 @@ if(!defined('FC_INC_DIR')) {
 	die("No access");
 }
 
+date_default_timezone_set('UTC');
+
 ?>
 
 <link rel="stylesheet" href="../modules/flatCal.mod/styles/acp.css" type="text/css" media="screen, projection">
