@@ -68,10 +68,7 @@ div.date_box {
 }
 
 .cal_title {
-	font-size: 16px;
-	line-height: 20px;
-	font-weight: bold;
-	margin: 0;
+	margin-top: 0;
 }
 
 
@@ -79,5 +76,15 @@ div.date_box {
 	margin: 8px 0 0 0;
 	font-size: 12px;
 	color: #999;
+}
+
+.cal_image {
+	float: right;
+	margin: 0 0 5px 5px;
+	width: 125px;
+	max-width: 125px;
+	height: auto;
+	border-radius: 5px;
+	
 }
 

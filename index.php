@@ -6,16 +6,31 @@
  *
  * $mod_slug -> for example
  *		/22/ -> integer show article
- *		/$mod[url_categories]/example/ -> show archive from category
+ *		/$fc_prefs['prefs_url_split_cats']/example/ -> show archive from category
  *
  */
 
 include("info.inc.php");
 include("frontend/functions.php");
 
-$tpl = file_get_contents("modules/flatCal.mod/styles/styles.css");
 
-$styles = "<style type='text/css'>$tpl</style>";
+$mod_db = $mod['database'];
+$dbh = new PDO("sqlite:$mod_db");
+$sql = "SELECT * FROM fc_prefs WHERE prefs_status = 'active' ";
+$fc_prefs = $dbh->query($sql);
+$fc_prefs = $fc_prefs->fetch(PDO::FETCH_ASSOC);
+$dbh = null;
+
+$tpl_folder = 'default';
+
+if($fc_prefs['prefs_template'] != 'use_standard') {
+	$tpl_folder = $fc_prefs['prefs_template'];
+}
+
+/* include stylesheets for this modul */
+$tpl_styles = file_get_contents('modules/flatCal.mod/styles/'.$tpl_folder.'/styles.css');
+$styles = '<style type="text/css">'.$tpl_styles.'</style>';
+
 $modul_head_enhanced = "$styles";
 
 
@@ -24,7 +39,7 @@ $a_mod_slug = explode("/", $mod_slug);
 
 $display_mode = 'list_archive'; // default mode
 
-if($a_mod_slug[0] == "$mod[url_categories]" AND $a_mod_slug[1] != "") {
+if($a_mod_slug[0] == $fc_prefs['prefs_url_split_cats'] AND $a_mod_slug[1] != "") {
 	$cat = strip_tags($a_mod_slug[1]);
 	$display_mode = 'list_archive_by_category';	
 }

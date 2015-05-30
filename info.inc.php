@@ -5,17 +5,17 @@
  */
 
 
-$mod[name] 				= "flatCal";
-$mod[version] 			= "0.2";
+$mod['name'] 				= "flatCal";
+$mod['version'] 			= "0.4";
 
-$mod[author]			= "Patrick Konstandin";
-$mod[description]		= "Veröffentlichen von Terminen.";
+$mod['author']			= "Patrick Konstandin";
+$mod['description']		= "Veröffentlichen von Terminen.";
 
-$mod[database]			= "content/SQLite/flatCal.sqlite3";
+$mod['database']			= "content/SQLite/flatCal.sqlite3";
 
 /* url design */
-$mod[url_categories] = "rubrik";
-$mod[url_pages] = "seite";
+$mod['url_categories'] = "rubrik";
+$mod['url_pages'] = "seite";
 
 
 $arr_month['01'] = "JAN";
@@ -33,16 +33,20 @@ $arr_month['12'] = "DEZ";
 
 
 
-$modnav[0][link]		= "Übersicht";
-$modnav[0][title]		= "Allen Termine auf einen Blick";
-$modnav[0][file]		= "start";
+$modnav[0]['link']		= "Übersicht";
+$modnav[0]['title']		= "Allen Termine auf einen Blick";
+$modnav[0]['file']		= "start";
 
-$modnav[1][link]		= "Neuer Termin";
-$modnav[1][title]		= "Termin verfassen";
-$modnav[1][file]		= "edit";
+$modnav[1]['link']		= "Neuer Termin";
+$modnav[1]['title']		= "Termin verfassen";
+$modnav[1]['file']		= "edit";
 
-$modnav[2][link]		= "Rubriken";
-$modnav[2][title]		= "Rubriken verfassen, bearbeiten oder löschen";
-$modnav[2][file]		= "categories";
+$modnav[2]['link']		= "Rubriken";
+$modnav[2]['title']		= "Rubriken verfassen, bearbeiten oder löschen";
+$modnav[2]['file']		= "categories";
+
+$modnav[3]['link']		= "Einstellungen";
+$modnav[3]['title']		= "Einstellungen verfassen, bearbeiten oder löschen";
+$modnav[3]['file']		= "prefs";
 
 ?>

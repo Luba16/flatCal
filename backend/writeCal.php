@@ -1,16 +1,15 @@
 <?php
-/*
-@modul flatCal
-save and update
-*/
+/**
+ * @modul flatCal
+ * save and update
+ */
 
 if(!defined('FC_INC_DIR')) {
 	die("No access");
 }
 
-// all incoming data -> sqlite_escape_string
-foreach($_POST as $key => $val) {
-	$$key = @sqlite_escape_string($val); 
+if(isset($_REQUEST['id'])) {
+	$id = (int) $_REQUEST['id'];
 }
 
 $cal_startdate = strtotime($_POST['cal_startdate'] . ' UTC');
@@ -20,42 +19,52 @@ if($cal_enddate < $cal_startdate) {
 	$cal_enddate = $cal_startdate;
 }
 
-
-$cal_categories = @implode("<->", $_POST[cal_categories]);
+$cal_categories = @implode("<->", $_POST['cal_categories']);
+$files_images_string = @implode("<->", $_POST['cals_banner']);
 
 $dbh = new PDO("sqlite:$mod_db");
 
-$sql_new = "INSERT INTO fc_cals (
-			cal_id, cal_title, cal_startdate, cal_enddate, cal_text, cal_categories, cal_author
+$sql = "INSERT INTO fc_cals (
+			cal_id, cal_title, cal_startdate, cal_enddate, cal_text, cal_categories, cal_author, cal_image
 			) VALUES (
-			NULL, '$cal_title', $cal_startdate, $cal_enddate, '$cal_text', '$cal_categories', '$cal_author' ) ";
+			NULL, :cal_title, $cal_startdate, $cal_enddate, :cal_text, :cal_categories, :cal_author, :cal_image) ";
 
-$sql_update = "UPDATE fc_cals
-				SET	cal_title = '$cal_title',
-					cal_startdate = '$cal_startdate',
-					cal_enddate = '$cal_enddate',
-					cal_text = '$cal_text',
-					cal_categories = '$cal_categories',
-					cal_author = '$cal_author'
-				WHERE cal_id = $id ";
+if($_REQUEST['modus'] == "update") {
 
-if($modus == "new")	{									
-	$cnt_changes = $dbh->exec($sql_new);
-	$sys_message = "{OKAY} Termin wurde gespeichert";
+	$sql = "UPDATE fc_cals
+					SET	cal_title = :cal_title,
+						cal_startdate = '$cal_startdate',
+						cal_enddate = '$cal_enddate',
+						cal_text = :cal_text,
+						cal_categories = :cal_categories,
+						cal_author = :cal_author,
+						cal_image = :cal_image
+					WHERE cal_id = $id ";
 }
 
-if($modus == "update") {
-	$cnt_changes = $dbh->exec($sql_update);
-	$sys_message = "{OKAY} Termin wurde aktualisiert";
-}
-
-if($cnt_changes > 0){
-	print_sysmsg("$sys_message");
+				
+if(!$sth = $dbh->prepare($sql)) {
+	print_r($dbh->errorInfo());
 } else {
-	print_sysmsg("{error} Es ist ein Fehler aufgetreten");
+	$sth->bindParam(':cal_title', $_POST['cal_title'], PDO::PARAM_STR);
+	$sth->bindParam(':cal_text', $_POST['cal_text'], PDO::PARAM_STR);
+	$sth->bindParam(':cal_author', $_POST['cal_author'], PDO::PARAM_STR);
+	$sth->bindParam(':cal_categories', $cal_categories, PDO::PARAM_STR);
+	$sth->bindParam(':cal_image', $files_images_string, PDO::PARAM_STR);
+	$cnt_changes = $sth->execute();
 }
 
 
+
+
+if($cnt_changes == TRUE){
+	$sys_message = "{OKAY} Der Eintrag wurde gespeichert";
+	record_log("$_SESSION[user_nick]","cal ($modus) <i>$_POST[cal_title]</i>","0");
+} else {
+	$sys_message = "{error} Der Eintrag wurde nicht gespeichert";
+}
+
+print_sysmsg("$sys_message");
 
 
 ?>

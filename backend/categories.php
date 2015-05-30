@@ -14,44 +14,36 @@ echo"<h3>$mod_name <small>Rubriken bearbeiten</small></h3>";
 $dbh = new PDO("sqlite:$mod_db");
 
 
-if($_POST[delete_cat]) {
-
-$cat_id = (int) $_POST[cat_id];
-
-$delete_sql = "DELETE FROM fc_calscats
-			   WHERE cat_id = $cat_id";
-
-$cnt_changes = $dbh->exec($delete_sql);
-
+if($_POST['delete_cat']) {
+	$cat_id = (int) $_POST['cat_id'];
+	$delete_sql = "DELETE FROM fc_calscats WHERE cat_id = $cat_id";
+	$cnt_changes = $dbh->exec($delete_sql);
 }
 
 
 
 
-/*
-Neue Rubrik speichern
-*/
-if($_POST[save_cat]) {
+if($_POST['save_cat']) {
 
-$new_cat_name = sqlite_escape_string($_POST[cat_name]);
-$new_cat_description = sqlite_escape_string($_POST[cat_description]);
-
-$new_sql = "INSERT INTO fc_calscats
-									(	cat_id ,
-										cat_name ,
-										cat_description 
-									) VALUES (
-										NULL,
-										'$new_cat_name',
-										'$new_cat_description' ) ";
-
-$cnt_changes = $dbh->exec($new_sql);
-
-if($cnt_changes > 0) {
-	print_sysmsg("{OKAY} Rubrik wurde gespeichert");
-} else {
-	print_sysmsg("{error} Es ist ein Fehler aufgetreten");
-}
+	$new_cat_name = $dbh -> quote($_POST['cat_name']);
+	$new_cat_description = $dbh -> quote($_POST['cat_description']);
+	
+	$new_sql = "INSERT INTO fc_calscats
+										(	cat_id ,
+											cat_name ,
+											cat_description 
+										) VALUES (
+											NULL,
+											$new_cat_name,
+											$new_cat_description ) ";
+	
+	$cnt_changes = $dbh->exec($new_sql);
+	
+	if($cnt_changes > 0) {
+		print_sysmsg("{OKAY} Rubrik wurde gespeichert");
+	} else {
+		print_sysmsg("{error} Es ist ein Fehler aufgetreten");
+	}
 
 
 }
@@ -67,12 +59,13 @@ Update Rubrik
 if($_POST[update_cat]) {
 
 $cat_id = (int) $_POST[cat_id];
-$cat_name = sqlite_escape_string($_POST[cat_name]);
-$cat_description = sqlite_escape_string($_POST[cat_description]);
+
+	$cat_name = $dbh -> quote($_POST[cat_name]);
+	$cat_description = $dbh -> quote($_POST[cat_description]);
 
 $update_sql = "UPDATE fc_calscats
-									SET cat_name = '$cat_name',
-										cat_description = '$cat_description'
+									SET cat_name = $cat_name,
+										cat_description = $cat_description
 									WHERE cat_id = $cat_id ";
 
 $cnt_changes = $dbh->exec($update_sql);
@@ -81,7 +74,10 @@ if($cnt_changes > 0) {
 	print_sysmsg("{OKAY} Rubrik wurde aktualisiert");
 } else {
 	print_sysmsg("{error} Es ist ein Fehler aufgetreten");
+	print_r($dbh->errorInfo());
 }
+
+$_REQUEST[editcat] = $editcat;
 
 }
 
@@ -114,8 +110,8 @@ $delete_button = "";
 
 
 
-if($_GET[editcat] != "") {
-	$editcat = (int) $_GET[editcat];
+if($_REQUEST[editcat] != "") {
+	$editcat = (int) $_REQUEST[editcat];
 	$submit_button = "<input type='submit' class='btn btn-success' name='update_cat' value='$lang[update]'>";
 	$delete_button = "<input type='submit' class='btn btn-danger' name='delete_cat' value='$lang[delete]' onclick=\"return confirm('$lang[confirm_delete_data]')\">";
 	$hidden_field = "<input type='hidden' name='cat_id' value='$editcat'>";
@@ -156,10 +152,10 @@ echo"<h4>Vorhandene Rubriken:</h4>";
 
 for($i=0;$i<count($cats);$i++) {
 
-	$cat_id = $cats[$i][cat_id];
-	$cat_name = $cats[$i][cat_name];
-	$cat_description = $cats[$i][cat_description];
-	$cat_counter = $cats[$i][cat_counter];
+	$cat_id = $cats[$i]['cat_id'];
+	$cat_name = $cats[$i]['cat_name'];
+	$cat_description = $cats[$i]['cat_description'];
+	$cat_counter = $cats[$i]['cat_counter'];
 	
 	if(!$cat_counter) {
 		$cat_counter = 0;
@@ -167,7 +163,7 @@ for($i=0;$i<count($cats);$i++) {
 	
 	echo"<div style='margin:4px 0; border-bottom: 1px solid #ccc;'>";
 	echo"<b>$cat_name</b><br />$cat_description<br />";
-	echo"<a href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=categories&editcat=$cat_id'>Bearbeiten</a>";
+	echo"<a href='acp.php?tn=moduls&sub=flatCal.mod&a=categories&editcat=$cat_id' class='btn btn-xs btn-default'>Bearbeiten</a>";
 	echo"</div>";
 
 }

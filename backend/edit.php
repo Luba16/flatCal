@@ -4,32 +4,31 @@
  * edit entries
 */
 
+
 if(!defined('FC_INC_DIR')) {
 	die("No access");
 }
 
-echo"<h3>$mod_name ";
-
-if($_REQUEST[id] != "") {
-	echo"<small>Termin bearbeiten</small>";
+if($_REQUEST['id'] != "") {
+	$title_add = 'Termin bearbeiten';
 } else {
-	echo"<small>Termin einstellen</small>";
+	$title_add = 'Termin einstellen';
 }
 
-echo '</h3>';
+echo '<h3>'.$mod_name.' <small>'.$title_add.'</small></h3>';
+
 
 include("functions.php");
 
-if($_POST[save_cal]) {
+if($_POST['save_cal']) {
 	include("writeCal.php");
 }
 
 
-if($_REQUEST[id] != "") {
+if(isset($_REQUEST['id'])) {
 	$modus = "update";
-	$id = (int) $_REQUEST[id];
-	$save_button = "<input type='submit' class='btn btn-success' name='save_cal' value='Aktualisieren'>";
-	
+	$id = (int) $_REQUEST['id'];
+	$btn_value = 'Aktualisieren';
 	
 	$dbh = new PDO("sqlite:$mod_db");	
 	$sql = "SELECT * FROM fc_cals WHERE cal_id = $id";
@@ -43,27 +42,8 @@ if($_REQUEST[id] != "") {
 
 } else {
 	$modus = "new";
-	$save_button = "<input type='submit' class='btn btn-success' name='save_cal' value='Speichern'>";
+	$btn_value = 'Speichern';
 }
-
-
-
-echo"<form action='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=edit' method='POST' class='form-horizontal'>";
-
-
-echo'<div class="row">';
-echo'<div class="col-md-8">';
-
-echo '<div class="form-group">';
-echo '<label class="col-md-2 control-label">Titel:</label>';
-echo '<div class="col-md-10">';
-echo "<input class='form-control' type='text' name='cal_title' value='$cal_title'>";
-echo '</div>';
-echo '</div>';
-
-echo'<div class="row">';
-
-echo'<div class="col-md-6">';
 
 if($cal_startdate > 0) {
 	$cal_startdate = date("Y-m-d",$cal_startdate);
@@ -77,82 +57,62 @@ if($cal_enddate > 0) {
 	$cal_enddate = date("Y-m-d");
 }
 
-echo '<div class="form-group">';
-echo '<label class="col-md-4 control-label">Beginn:</label>';
-echo '<div class="col-md-8">';
-echo "<input name='cal_startdate' type='text' value='$cal_startdate' class='dp form-control' />";
-echo '</div>';
-echo '</div>';
-
-echo'</div>'; // span6
-echo'<div class="col-md-6">';
-
-echo '<div class="form-group">';
-echo '<label class="col-md-4 control-label">Ende:</label>';
-echo '<div class="col-md-8">';
-echo"<input name='cal_enddate' type='text' value='$cal_enddate' class='dp form-control' />";
-echo '</div>';
-echo '</div>';
-
-echo'</div>'; // span6
-echo'</div>'; // row-fluid
-
-if($news_author == "") {
-	$news_author = "$_SESSION[user_firstname] $_SESSION[user_lastname]";
+if($cal_author == "") {
+	$cal_author = $_SESSION['user_firstname'] .' '. $_SESSION['user_lastname'];
 }
 
-echo '<div class="form-group">';
-echo '<label class="col-md-2 control-label">Author:</label>';
-echo '<div class="col-md-10">';
-echo "<input class='form-control' type='text' name='news_author' value='$news_author'>";
-echo '</div>';
-echo '</div>';
-
-echo '</div>'; // span8
-
-echo'<div class="col-md-4">';
-
-
-echo"<label>Rubriken</h5>";
-
+/* generate categories list */
 $cats = get_all_cal_categories();
-
-echo'<ul class="list-unstyled">';
+$cats_str = '<ul class="list-unstyled">';
 for($i=0;$i<count($cats);$i++) {
-	$category = $cats[$i][cat_name];
+	$category = $cats[$i]['cat_name'];
 	
 	$array_categories = explode("<->", $cal_categories);
 	$checked = "";
 	if(in_array("$category", $array_categories)) {
 	    $checked = "checked";
 	}
-	echo"<li><div class='checkbox'><label><input type='checkbox' name='cal_categories[]' value='$category' $checked> $category</label></div></li>";
+	$cats_str .= "<li><div class='checkbox'><label><input type='checkbox' name='cal_categories[]' value='$category' $checked> $category</label></div></li>";
 }
-echo'</ul>';
+$cats_str .= '</ul>';
 
 
+/* gerate image selection widget */
+$images = list_images();
+$select_images = '<select multiple="multiple" class="image-picker show-html" name="cals_banner[]">';
+
+for($i=0;$i<count($images);$i++) {
+	
+	$image_name = $images[$i];
+	$imgsrc = "../$img_path/$images[$i]";
+
+	$selected_img = '';
+	if(strpos($cal_image, $image_name) !== false) { $selected_img = 'selected'; }
+	$select_images .= '<option data-img-src="../content/images/'.$image_name.'" value="'.$image_name.'" '.$selected_img.'>'.$image_name.'</option>';
+}
+
+$select_images .= '</select>';
+
+$images_widget = '<div class="images-list scrollbox">'.$select_images.'</div>';
 
 
-echo'</div>'; // span4
+$form_tpl = file_get_contents('../modules/flatCal.mod/templates/edit_form.tpl');
+$form_tpl = str_replace('{cal_title}', $cal_title, $form_tpl);
+$form_tpl = str_replace('{cal_author}', $cal_author, $form_tpl);
+$form_tpl = str_replace('{cal_startdate}', $cal_startdate, $form_tpl);
+$form_tpl = str_replace('{cal_enddate}', $cal_enddate, $form_tpl);
+$form_tpl = str_replace('{cal_text}', $cal_text, $form_tpl);
+$form_tpl = str_replace('{categories_list}', $cats_str, $form_tpl);
+$form_tpl = str_replace('{images_list}', $images_widget, $form_tpl);
+$form_tpl = str_replace('{modus}', $modus, $form_tpl);
+$form_tpl = str_replace('{id}', $id, $form_tpl);
+$form_tpl = str_replace('{btn_value}', $btn_value, $form_tpl);
+$form_tpl = str_replace('{form_action}', "acp.php?tn=moduls&sub=flatCal.mod&a=edit", $form_tpl);
 
-echo'</div>'; // row-fluid
+
+echo $form_tpl;
 
 
-
-
-echo"<textarea name='cal_text' class='mceEditor'>$cal_text</textarea>";
-
-
-
-
-//submit form to save data
-echo"<div class='formfooter'>";
-echo"<input type='hidden' name='modus' value='$modus'>";
-echo"<input type='hidden' name='id' value='$id'>";
-echo"$save_button";
-echo"</div>";
-
-echo"</form>";
 
 
 

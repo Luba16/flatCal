@@ -11,21 +11,14 @@ if(!defined('FC_INC_DIR')) {
 }
 
 echo '<h3>'.$mod_name.'</h3>';
-
-
-
-if(!is_file("$mod_db")) {
-	echo '<div class="alert alert-danger">Die Datenbank existiert nicht...</div>';
-	include("../modules/flatCal.mod/supplies/createDB.php");
-}
-
+include('../modules/'.$mod_name.'.mod/install/installer.php');
 
 /* change settings */
 
 if($_GET['show_expired'] == "true") {
-	$_SESSION[show_expired] = "show";
+	$_SESSION['show_expired'] = "show";
 } elseif($_GET['show_expired'] == "false") {
-	unset($_SESSION[show_expired]);
+	unset($_SESSION['show_expired']);
 }
 
 
@@ -34,8 +27,8 @@ if($_GET['show_expired'] == "true") {
 $dbh = new PDO("sqlite:$mod_db");
 
 
-if(is_numeric($_REQUEST[delete])){
-	$delete = (int) $_REQUEST[delete];
+if(is_numeric($_REQUEST['delete'])){
+	$delete = (int) $_REQUEST['delete'];
 	$sql = "DELETE FROM fc_cals WHERE cal_id = $delete";
 	$cnt_changes = $dbh->exec($sql);
 	
@@ -48,7 +41,7 @@ if(is_numeric($_REQUEST[delete])){
 }
 
 
-if($_SESSION[show_expired]) {
+if($_SESSION['show_expired']) {
 	$filer_sql = "";
 } else {
 	$today_ts = time() - 86400;
@@ -66,8 +59,8 @@ $show_start = $start+1;
 $nbr_pages = ceil($count_entries/$articles_per_page);
 
 
-if($_GET[start] != "") {
-	$start = (int) $_GET[start];
+if($_GET['start'] != "") {
+	$start = (int) $_GET['start'];
 }
 
 $end = $start+$articles_per_page;
@@ -144,8 +137,6 @@ for($i=0;$i<count($cals);$i++) {
 	$diff = $cal_startdate-$now;
 	$days = ceil($diff/86400);
 	
-	$showdays = "in $days Tagen";
-	
 	if($days == 0) { $showdays = "heute"; }
 	if($days == 1) { $showdays = "morgen"; }
 	if($days == 2) { $showdays = "übermorgen"; }
@@ -153,8 +144,8 @@ for($i=0;$i<count($cals);$i++) {
 	$cal_startdate = date("d.m.Y",$cal_startdate);
 	$cal_enddate = date("d.m.Y",$cal_enddate);
 	
-	$link_edit = "<a class='btn btn-success btn-xs' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=edit&id=$cal_id'>Bearbeiten</a>";
-	$link_delete = "<a class='btn btn-danger btn-xs' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=start&delete=$cal_id' onclick=\"return confirm('$lang[confirm_delete_data]')\">Löschen</a>";
+	$link_edit = "<a class='btn btn-success btn-sm' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=edit&id=$cal_id'>Bearbeiten</a>";
+	$link_delete = "<a class='btn btn-danger btn-sm' href='$_SERVER[PHP_SELF]?tn=moduls&sub=flatCal.mod&a=start&delete=$cal_id' onclick=\"return confirm('$lang[confirm_delete_data]')\">Löschen</a>";
 	
 	
 	$tpl = file_get_contents("../modules/flatCal.mod/templates/acp_cals_list.tpl");
@@ -163,11 +154,11 @@ for($i=0;$i<count($cals);$i++) {
 	$tpl = str_replace("{cal_text}", "$cal_text", $tpl);
 	$tpl = str_replace("{cal_startdate}", "$cal_startdate", $tpl);
 	$tpl = str_replace("{cal_enddate}", "$cal_enddate", $tpl);
-	$tpl = str_replace("{showdays}", "$showdays", $tpl);
+	$tpl = str_replace("{showdays}", "$days", $tpl);
 	$tpl = str_replace("{edit_cal}", "$link_edit", $tpl);
 	$tpl = str_replace("{delete_cal}", "$link_delete", $tpl);
 	
-	echo "$tpl";
+	echo $tpl;
 
 }
 

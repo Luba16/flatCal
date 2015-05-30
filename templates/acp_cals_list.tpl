@@ -2,9 +2,10 @@
 <div class="well well-sm">
 	<div class="row">
 		<div class="col-md-2">
-			<div class="well well-sm" style="text-align:center;margin-bottom:0;padding-bottom:0;font-size:14px;">
-				<p>{cal_startdate}<br>{cal_enddate}<br><span class="label label-default">{showdays}</span></p>
-			</div>
+			<ul class="list-group">
+				<li class="list-group-item"><span class="badge">{showdays}</span>{cal_startdate}</li>
+				<li class="list-group-item">{cal_enddate}</li>
+			</ul>
 		</div>
 		<div class="col-md-10">
 			<h2>{cal_title}</h2>

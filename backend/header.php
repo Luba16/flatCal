@@ -21,3 +21,14 @@ $(function(){
 	$('.dp').datepicker({format:'yyyy-mm-dd'})
 });
 </script>
+
+<script type="text/javascript" src="../modules/flatCal.mod/js/image-picker.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("select.image-picker").imagepicker({
+	      hide_select : true,
+	      show_label  : true
+	});
+});
+</script>
